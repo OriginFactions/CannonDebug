@@ -1,0 +1,62 @@
+name: ${project.artifactId}
+main: org.originmc.cdebug.CannonDebug
+version: ${project.version}
+author: Sudzzy
+softdepend: [WorldEdit]
+
+commands:
+  cannondebug:
+    aliases: ["c", "cd", "cdebug"]
+    description: Provides the ability to debug cannons.
+    usage: "§cIncorrect syntax. For help use /cannondebug"
+    permission: cannondebug.user
+    permission-message: '§cYou do not have permission to use that command.'
+
+permissions:
+  cannondebug.clear: {default: false}
+  cannondebug.help: {default: false}
+  cannondebug.history: {default: false}
+  cannondebug.history.all: {default: false}
+  cannondebug.history.help: {default: false}
+  cannondebug.history.id: {default: false}
+  cannondebug.history.tick: {default: false}
+  cannondebug.maxarea.unlimited: {default: false}
+  cannondebug.maxselections.unlimited: {default: false}
+  cannondebug.page: {default: false}
+  cannondebug.preview: {default: false}
+  cannondebug.region: {default: false}
+  cannondebug.select: {default: false}
+
+  cannondebug.history.*:
+    default: false
+    children:
+      cannondebug.history: true
+      cannondebug.history.all: true
+      cannondebug.history.help: true
+      cannondebug.history.id: true
+      cannondebug.history.tick: true
+
+  cannondebug.user:
+    default: true
+    children:
+      cannondebug.clear: true
+      cannondebug.help: true
+      cannondebug.history.*: true
+      cannondebug.maxarea.500: true
+      cannondebug.maxselections.25: true
+      cannondebug.page: true
+      cannondebug.preview: true
+      cannondebug.region: true
+      cannondebug.select: true
+
+  cannondebug.admin:
+    default: op
+    children:
+      cannondebug.maxarea.unlimited: true
+      cannondebug.maxselections.unlimited: true
+      cannondebug.user: true
+
+  cannondebug.*:
+    default: false
+    children:
+      cannondebug.admin: true

@@ -22,33 +22,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug.cmd;
 
-import org.bukkit.ChatColor;
+package org.originmc.cannondebug.cmd;
+
+import mkremins.fanciful.FancyMessage;
 import org.bukkit.command.CommandSender;
-import org.originmc.cdebug.CannonDebug;
+import org.originmc.cannondebug.CannonDebugPlugin;
+import org.originmc.cannondebug.FancyPager;
 
-public final class CmdSelect extends CommandExecutor {
+import static org.bukkit.ChatColor.*;
+import static org.bukkit.ChatColor.AQUA;
+import static org.bukkit.ChatColor.YELLOW;
 
-    private static final String ENABLED_MESSAGE = ChatColor.YELLOW + "Selection mode now enabled. Right click blocks to " +
-            "add, left click to remove.";
+public final class CmdHistoryHelp extends CommandExecutor {
 
-    private static final String DISABLED_MESSAGE = ChatColor.YELLOW + "Selection mode now disabled.";
+    private static final FancyPager HELP_PAGER = new FancyPager("Help for command \"/c h\"", new FancyMessage[]{
+            new FancyMessage("/c h a,all ").color(AQUA).then("Prints all up to date profiling history.").color(YELLOW),
+            new FancyMessage("/c h ?,help ").color(AQUA).then("Displays this plugins' history help page.").color(YELLOW),
+            new FancyMessage("/c h i,id ").color(AQUA).then("[id] ").color(DARK_AQUA).then("View all history for an entity id.").color(YELLOW),
+            new FancyMessage("/c h t,tick ").color(AQUA).then("[tick] ").color(DARK_AQUA).then("View all history in a server tick.").color(YELLOW)
+    });
 
-    public CmdSelect(CannonDebug plugin, CommandSender sender, String[] args, String permission) {
+    public CmdHistoryHelp(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
     @Override
     public boolean perform() {
-        if (!user.isSelecting()) {
-            user.setSelecting(true);
-            sender.sendMessage(ENABLED_MESSAGE);
-            return true;
-        }
-
-        user.setSelecting(false);
-        sender.sendMessage(DISABLED_MESSAGE);
+        // Send the sender this plugins' history help message.
+        send(HELP_PAGER, 0);
         return true;
     }
 

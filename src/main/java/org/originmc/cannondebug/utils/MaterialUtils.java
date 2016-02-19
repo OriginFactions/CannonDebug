@@ -22,7 +22,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug.utils;
+
+package org.originmc.cannondebug.utils;
 
 import org.bukkit.Material;
 
@@ -70,29 +71,6 @@ public final class MaterialUtils {
      */
     public static boolean isSelectable(Material material) {
         return isStacker(material) || isDispenser(material);
-    }
-
-    /**
-     * Attempts to get the friendly name of a material.
-     *
-     * @param material the material to convert.
-     * @return a friendlier name for the material.
-     */
-    public static String getFriendlyName(Material material) {
-        // Iterate through every character.
-        char[] name = material.name().toCharArray();
-        for (int i = 0; i < name.length; i++) {
-            // Replace all underscores with spaces.
-            if (name[i] == '_') {
-                name [i] = ' ';
-            }
-
-            // Change to lower case if not first letter and does not have a space before it.
-            else if (i != 0 && name[i - 1] != ' ') {
-                name[i] = Character.toLowerCase(name[i]);
-            }
-        }
-        return String.valueOf(name);
     }
 
 }

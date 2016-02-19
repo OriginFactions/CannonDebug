@@ -22,35 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug.cmd;
 
-import mkremins.fanciful.FancyMessage;
+package org.originmc.cannondebug.cmd;
+
 import org.bukkit.command.CommandSender;
-import org.originmc.cdebug.CannonDebug;
-import org.originmc.cdebug.FancyPager;
+import org.originmc.cannondebug.CannonDebugPlugin;
 
-import static org.bukkit.ChatColor.*;
-import static org.bukkit.ChatColor.AQUA;
-import static org.bukkit.ChatColor.YELLOW;
+public final class CmdHistory extends CommandExecutor {
 
-public final class CmdHistoryHelp extends CommandExecutor {
-
-    private static final FancyPager HELP_PAGER = new FancyPager("Help for command \"/c h\"", new FancyMessage[]{
-            new FancyMessage("/c h a,all ").color(AQUA).then("Prints all up to date profiling history.").color(YELLOW),
-            new FancyMessage("/c h ?,help ").color(AQUA).then("Displays this plugins' history help page.").color(YELLOW),
-            new FancyMessage("/c h i,id ").color(AQUA).then("[id] ").color(DARK_AQUA).then("View all history for an entity id.").color(YELLOW),
-            new FancyMessage("/c h t,tick ").color(AQUA).then("[tick] ").color(DARK_AQUA).then("View all history in a server tick.").color(YELLOW)
-    });
-
-    public CmdHistoryHelp(CannonDebug plugin, CommandSender sender, String[] args, String permission) {
+    public CmdHistory(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
     @Override
     public boolean perform() {
-        // Send the sender this plugins' history help message.
-        send(HELP_PAGER, 0);
-        return true;
+        return HistoryCommandType.fromCommand(plugin, sender, args).execute();
     }
 
 }

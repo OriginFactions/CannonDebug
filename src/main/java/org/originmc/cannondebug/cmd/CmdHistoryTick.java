@@ -22,29 +22,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug.cmd;
+
+package org.originmc.cannondebug.cmd;
 
 import mkremins.fanciful.FancyMessage;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.Vector;
-import org.originmc.cdebug.BlockSelection;
-import org.originmc.cdebug.CannonDebug;
-import org.originmc.cdebug.EntityTracker;
-import org.originmc.cdebug.FancyPager;
-import org.originmc.cdebug.utils.EntityUtils;
-import org.originmc.cdebug.utils.NumberUtils;
+import org.originmc.cannondebug.BlockSelection;
+import org.originmc.cannondebug.CannonDebugPlugin;
+import org.originmc.cannondebug.EntityTracker;
+import org.originmc.cannondebug.FancyPager;
+import org.originmc.cannondebug.utils.EnumUtils;
+import org.originmc.cannondebug.utils.NumberUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.bukkit.ChatColor.*;
 
-public final class CmdHistoryID extends CommandExecutor {
+public final class CmdHistoryTick extends CommandExecutor {
 
-    public static final String INVALID_ID_MESSAGE = ChatColor.RED + "You have input an invalid id!";
-
-    public CmdHistoryID(CannonDebug plugin, CommandSender sender, String[] args, String permission) {
+    public CmdHistoryTick(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
@@ -54,32 +53,31 @@ public final class CmdHistoryID extends CommandExecutor {
         if (args.length == 2) return false;
 
         // Do nothing if the user input an invalid id.
-        int id = Math.abs(NumberUtils.parseInt(args[2]));
-        BlockSelection selection = user.getSelection(id);
-        if (selection == null) {
-            sender.sendMessage(INVALID_ID_MESSAGE);
-            return true;
-        }
+        List<FancyMessage> lines = new ArrayList<>();
+        int tick = Math.abs(NumberUtils.parseInt(args[2]));
+        for (BlockSelection selection : user.getSelections()) {
+            // Do nothing if tracker is null.
+            EntityTracker tracker = selection.getTracker();
+            if (tracker == null) {
+                continue;
+            }
 
-        // Generate a new fancy message line to add to the pager.
-        ArrayList<FancyMessage> lines = new ArrayList<>();
-        EntityTracker tracker = selection.getTracker();
-        int lifespan = tracker.getLocationHistory().size();
-        Location initial = tracker.getLocationHistory().get(0);
-        for (int i = 0; i < lifespan; i++) {
-            Location location = tracker.getLocationHistory().get(i);
-            Vector velocity = tracker.getVelocityHistory().get(i);
-            lines.add(new FancyMessage("Tick: " + i + " ")
+            // Do nothing if tracker is not within this current server tick.
+            if (tracker.getSpawnTick() > tick || (tracker.getDeathTick() != -1 && tracker.getDeathTick() < tick)) {
+                continue;
+            }
+
+            // Generate a new fancy message line to add to the pager.
+            int relativeTick = (int) (tick - tracker.getSpawnTick());
+            Location initial = tracker.getLocationHistory().get(0);
+            Location location = tracker.getLocationHistory().get(relativeTick);
+            Vector velocity = tracker.getVelocityHistory().get(relativeTick);
+            lines.add(new FancyMessage("ID: " + selection.getId() + " ")
                             .color(GRAY)
                             .formattedTooltip(
-                                    new FancyMessage("Click for all history on this tick.")
+                                    new FancyMessage("Click for all history on this ID.")
                                             .color(DARK_AQUA)
                                             .style(BOLD),
-
-                                    new FancyMessage("Server tick: ")
-                                            .color(YELLOW)
-                                            .then("" + (tracker.getSpawnTick() + i))
-                                            .color(LIGHT_PURPLE),
 
                                     new FancyMessage("Spawned tick: ")
                                             .color(YELLOW)
@@ -102,9 +100,9 @@ public final class CmdHistoryID extends CommandExecutor {
                                             .color(GRAY)
                             )
 
-                            .command("/cannondebug h t " + (tracker.getSpawnTick() + i))
+                            .command("/cannondebug h i " + selection.getId())
 
-                            .then(EntityUtils.getFriendlyName(tracker.getEntityType()))
+                            .then(EnumUtils.getFriendlyName(tracker.getEntityType()))
                             .color(YELLOW)
 
                             .then(" | ")
@@ -127,7 +125,7 @@ public final class CmdHistoryID extends CommandExecutor {
         }
 
         // Send user the pager messages.
-        FancyPager pager = new FancyPager("History for selection ID: " + id, lines.toArray(new FancyMessage[lines.size()]));
+        FancyPager pager = new FancyPager("History for server tick: " + tick, lines.toArray(new FancyMessage[lines.size()]));
         send(pager, 0);
         return true;
     }

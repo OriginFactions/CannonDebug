@@ -22,21 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug.utils;
 
-import org.bukkit.entity.EntityType;
+package org.originmc.cannondebug.utils;
 
-public final class EntityUtils {
+public final class EnumUtils {
 
     /**
-     * Attempts to get the friendly name of an entity.
+     * Creates a more user friendly name for an enum and returns it.
      *
-     * @param entityType the entity to convert.
-     * @return a friendlier name for the entity.
+     * @param e the ${@link Enum} to get the friendly name of.
+     * @return a friendlier name for the passed enum.
      */
-    public static String getFriendlyName(EntityType entityType) {
+    public static String getFriendlyName(Enum e) {
         // Iterate through every character.
-        char[] name = entityType.name().toCharArray();
+        char[] name = e.name().toCharArray();
         for (int i = 0; i < name.length; i++) {
             // Replace all underscores with spaces.
             if (name[i] == '_') {

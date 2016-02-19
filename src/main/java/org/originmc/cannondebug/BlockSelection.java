@@ -22,7 +22,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug;
+
+package org.originmc.cannondebug;
 
 import lombok.Data;
 import org.bukkit.Location;

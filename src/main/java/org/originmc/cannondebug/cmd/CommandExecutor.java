@@ -22,19 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug.cmd;
+
+package org.originmc.cannondebug.cmd;
 
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.originmc.cdebug.CannonDebug;
-import org.originmc.cdebug.FancyPager;
-import org.originmc.cdebug.User;
+import org.originmc.cannondebug.CannonDebugPlugin;
+import org.originmc.cannondebug.FancyPager;
+import org.originmc.cannondebug.User;
 
 public abstract class CommandExecutor {
 
-    public final CannonDebug plugin;
+    public final CannonDebugPlugin plugin;
 
     public final CommandSender sender;
 
@@ -44,7 +45,7 @@ public abstract class CommandExecutor {
 
     public User user = null;
 
-    public CommandExecutor(CannonDebug plugin, CommandSender sender, String[] args, String permission) {
+    public CommandExecutor(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
         this.plugin = plugin;
         this.sender = sender;
         this.args = args;

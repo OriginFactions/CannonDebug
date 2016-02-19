@@ -22,7 +22,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug;
+
+package org.originmc.cannondebug;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -45,19 +46,28 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.material.Dispenser;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.originmc.cdebug.cmd.CommandType;
-import org.originmc.cdebug.utils.MaterialUtils;
-import org.originmc.cdebug.utils.NumberUtils;
+import org.originmc.cannondebug.cmd.CommandType;
+import org.originmc.cannondebug.utils.EnumUtils;
+import org.originmc.cannondebug.utils.MaterialUtils;
+import org.originmc.cannondebug.utils.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-import static org.bukkit.ChatColor.*;
-import static org.originmc.cdebug.utils.MaterialUtils.*;
+import static org.bukkit.ChatColor.BOLD;
+import static org.bukkit.ChatColor.GRAY;
+import static org.bukkit.ChatColor.GREEN;
+import static org.bukkit.ChatColor.RED;
+import static org.bukkit.ChatColor.WHITE;
+import static org.originmc.cannondebug.utils.MaterialUtils.isDispenser;
+import static org.originmc.cannondebug.utils.MaterialUtils.isExplosives;
+import static org.originmc.cannondebug.utils.MaterialUtils.isStacker;
 
-public final class CannonDebug extends JavaPlugin implements Listener, Runnable {
+public final class CannonDebugPlugin extends JavaPlugin implements Listener, Runnable {
 
     private static final String TOO_MANY_SELECTIONS = RED + "You have too many selections! " + GRAY + "(Max = %m)";
 
@@ -65,9 +75,9 @@ public final class CannonDebug extends JavaPlugin implements Listener, Runnable 
 
     private static final String REMOVED_SELECTION = RED + "" + BOLD + "REM " + WHITE + "%m @ %x %y %z " + GRAY + "ID: %i";
 
-    private final HashMap<UUID, User> users = new HashMap<>();
+    private final Map<UUID, User> users = new HashMap<>();
 
-    private final ArrayList<EntityTracker> activeTrackers = new ArrayList<>();
+    private final List<EntityTracker> activeTrackers = new ArrayList<>();
 
     private long currentTick = 0;
 
@@ -98,24 +108,24 @@ public final class CannonDebug extends JavaPlugin implements Listener, Runnable 
      * Attempts to either add or remove a selection depending on whether or not
      * the user already had this position set.
      *
-     * @param player the player to select the region.
-     * @param user   the players' corresponding user account.
-     * @param block  the block to select.
+     * @param user  the user that is adding to their selection.
+     * @param block the block to select.
      */
-    public void handleSelection(Player player, User user, Block block) {
+    public void handleSelection(User user, Block block) {
         // Do nothing if not a selectable block.
         if (!MaterialUtils.isSelectable(block.getType())) return;
 
         // Attempt to deselect block if it is already selected.
         BlockSelection selection = user.getSelection(block.getLocation());
+        Player player = user.getBase();
         if (selection != null) {
             // Inform the player.
             player.sendMessage(REMOVED_SELECTION
-                            .replace("%m", getFriendlyName(block.getType()))
-                            .replace("%x", "" + block.getX())
-                            .replace("%y", "" + block.getY())
-                            .replace("%z", "" + block.getZ())
-                            .replace("%i", "" + selection.getId())
+                    .replace("%m", EnumUtils.getFriendlyName(block.getType()))
+                    .replace("%x", "" + block.getX())
+                    .replace("%y", "" + block.getY())
+                    .replace("%z", "" + block.getZ())
+                    .replace("%i", "" + selection.getId())
             );
 
             // Remove the clicked location.
@@ -145,11 +155,11 @@ public final class CannonDebug extends JavaPlugin implements Listener, Runnable 
 
         // Inform the player.
         player.sendMessage(ADDED_SELECTION
-                        .replace("%m", getFriendlyName(block.getType()))
-                        .replace("%x", "" + block.getX())
-                        .replace("%y", "" + block.getY())
-                        .replace("%z", "" + block.getZ())
-                        .replace("%i", "" + selection.getId())
+                .replace("%m", EnumUtils.getFriendlyName(block.getType()))
+                .replace("%x", "" + block.getX())
+                .replace("%y", "" + block.getY())
+                .replace("%z", "" + block.getZ())
+                .replace("%i", "" + selection.getId())
         );
     }
 
@@ -219,7 +229,7 @@ public final class CannonDebug extends JavaPlugin implements Listener, Runnable 
 
         // Do nothing if the block is not selectable.
         Block block = event.getClickedBlock();
-        handleSelection(player, user, block);
+        handleSelection(user, block);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -240,7 +250,7 @@ public final class CannonDebug extends JavaPlugin implements Listener, Runnable 
 
         // Do nothing if the block is not selectable.
         Block block = event.getClickedBlock();
-        handleSelection(player, user, block);
+        handleSelection(user, block);
     }
 
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)

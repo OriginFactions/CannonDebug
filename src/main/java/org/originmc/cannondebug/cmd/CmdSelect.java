@@ -22,33 +22,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug.cmd;
 
+package org.originmc.cannondebug.cmd;
+
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.originmc.cdebug.CannonDebug;
-import org.originmc.cdebug.FancyPager;
-import org.originmc.cdebug.utils.NumberUtils;
+import org.originmc.cannondebug.CannonDebugPlugin;
 
-public final class CmdPage extends CommandExecutor {
+public final class CmdSelect extends CommandExecutor {
 
-    public CmdPage(CannonDebug plugin, CommandSender sender, String[] args, String permission) {
+    public CmdSelect(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
     @Override
     public boolean perform() {
-        // Do nothing if the command has invalid arguments.
-        if (args.length == 1) return false;
-
-        // Ensure the page requested is a valid value to have for this specific pager.
-        FancyPager pager = user.getPager();
-        int page = Math.abs(NumberUtils.parseInt(args[1]) - 1);
-        if (page >= pager.getPageCount()) {
-            page = pager.getPageCount() - 1;
+        if (!user.isSelecting()) {
+            user.setSelecting(true);
+            sender.sendMessage(ChatColor.YELLOW + "Selection mode now enabled. Right click blocks to add, left click to remove.");
+            return true;
         }
 
-        // Send the page.
-        send(pager, page);
+        user.setSelecting(false);
+        sender.sendMessage(ChatColor.YELLOW + "Selection mode now disabled.");
         return true;
     }
 

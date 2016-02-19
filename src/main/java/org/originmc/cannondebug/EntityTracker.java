@@ -22,7 +22,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug;
+
+package org.originmc.cannondebug;
 
 import lombok.Data;
 import org.bukkit.Location;
@@ -31,6 +32,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public final class EntityTracker {
@@ -39,9 +41,9 @@ public final class EntityTracker {
 
     private final long spawnTick;
 
-    private final ArrayList<Location> locationHistory = new ArrayList<>();
+    private final List<Location> locationHistory = new ArrayList<>();
 
-    private final ArrayList<Vector> velocityHistory = new ArrayList<>();
+    private final List<Vector> velocityHistory = new ArrayList<>();
 
     private long deathTick = -1;
 

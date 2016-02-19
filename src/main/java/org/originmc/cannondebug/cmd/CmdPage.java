@@ -22,20 +22,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug.cmd;
+
+package org.originmc.cannondebug.cmd;
 
 import org.bukkit.command.CommandSender;
-import org.originmc.cdebug.CannonDebug;
+import org.originmc.cannondebug.CannonDebugPlugin;
+import org.originmc.cannondebug.FancyPager;
+import org.originmc.cannondebug.utils.NumberUtils;
 
-public final class CmdHistory extends CommandExecutor {
+public final class CmdPage extends CommandExecutor {
 
-    public CmdHistory(CannonDebug plugin, CommandSender sender, String[] args, String permission) {
+    public CmdPage(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
     @Override
     public boolean perform() {
-        return HistoryCommandType.fromCommand(plugin, sender, args).execute();
+        // Do nothing if the command has invalid arguments.
+        if (args.length == 1) return false;
+
+        // Ensure the page requested is a valid value to have for this specific pager.
+        FancyPager pager = user.getPager();
+        int page = Math.abs(NumberUtils.parseInt(args[1]) - 1);
+        if (page >= pager.getPageCount()) {
+            page = pager.getPageCount() - 1;
+        }
+
+        // Send the page.
+        send(pager, page);
+        return true;
     }
 
 }

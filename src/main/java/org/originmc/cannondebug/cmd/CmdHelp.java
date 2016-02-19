@@ -22,12 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug.cmd;
+
+package org.originmc.cannondebug.cmd;
 
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.command.CommandSender;
-import org.originmc.cdebug.CannonDebug;
-import org.originmc.cdebug.FancyPager;
+import org.originmc.cannondebug.CannonDebugPlugin;
+import org.originmc.cannondebug.FancyPager;
 
 import static org.bukkit.ChatColor.*;
 
@@ -52,7 +53,7 @@ public final class CmdHelp extends CommandExecutor {
                     "via lookup commands. Profiling information is then indexed, to be clear and easy to use.").color(GREEN)
     });
 
-    public CmdHelp(CannonDebug plugin, CommandSender sender, String[] args, String permission) {
+    public CmdHelp(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 

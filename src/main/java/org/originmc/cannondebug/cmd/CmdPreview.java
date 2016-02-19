@@ -22,23 +22,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug.cmd;
+
+package org.originmc.cannondebug.cmd;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.originmc.cdebug.BlockSelection;
-import org.originmc.cdebug.CannonDebug;
+import org.originmc.cannondebug.BlockSelection;
+import org.originmc.cannondebug.CannonDebugPlugin;
 
 public final class CmdPreview extends CommandExecutor {
 
-    private static final String ENABLED_MESSAGE = ChatColor.YELLOW + "Preview mode now enabled.";
-
-    private static final String DISABLED_MESSAGE = ChatColor.YELLOW + "Preview mode now disabled.";
-
-    public CmdPreview(CannonDebug plugin, CommandSender sender, String[] args, String permission) {
+    public CmdPreview(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
@@ -66,7 +63,7 @@ public final class CmdPreview extends CommandExecutor {
         for (BlockSelection selection : user.getSelections()) {
             ((Player) sender).sendBlockChange(selection.getLocation(), Material.EMERALD_BLOCK, (byte) 0);
         }
-        sender.sendMessage(ENABLED_MESSAGE);
+        sender.sendMessage(ChatColor.YELLOW + "Preview mode now enabled.");
     }
 
     private void previewOff() {
@@ -74,7 +71,7 @@ public final class CmdPreview extends CommandExecutor {
             Block block = selection.getLocation().getBlock();
             ((Player) sender).sendBlockChange(selection.getLocation(), block.getType(), block.getData());
         }
-        sender.sendMessage(DISABLED_MESSAGE);
+        sender.sendMessage(ChatColor.YELLOW + "Preview mode now disabled.");
     }
 
 }

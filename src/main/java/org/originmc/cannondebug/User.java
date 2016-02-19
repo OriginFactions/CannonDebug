@@ -22,22 +22,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug;
+
+package org.originmc.cannondebug;
 
 import lombok.Data;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Data
 public final class User {
 
+    private final Player base;
+
+    private final List<BlockSelection> selections = new ArrayList<>();
+
     private int id = 1;
-
-    private final Player player;
-
-    private final ArrayList<BlockSelection> selections = new ArrayList<>();
 
     private boolean selecting;
 

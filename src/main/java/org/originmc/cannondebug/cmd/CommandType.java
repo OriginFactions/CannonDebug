@@ -22,27 +22,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug.cmd;
+
+package org.originmc.cannondebug.cmd;
 
 import org.bukkit.command.CommandSender;
-import org.originmc.cdebug.CannonDebug;
+import org.originmc.cannondebug.CannonDebugPlugin;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.Map;
 
-public enum HistoryCommandType {
+public enum CommandType {
 
-    ALL(CmdHistoryAll.class, new String[]{"all", "a"}),
+    CLEAR(CmdClear.class, new String[]{"clear", "c"}),
 
-    HELP(CmdHistoryHelp.class, new String[]{"help", "?"}),
+    HELP(CmdHelp.class, new String[]{"help", "?"}),
 
-    ID(CmdHistoryID.class, new String[]{"id", "i"}),
+    HISTORY(CmdHistory.class, new String[]{"history", "lookup", "h", "l"}),
 
-    TICK(CmdHistoryTick.class, new String[]{"tick", "t"});
+    PAGE(CmdPage.class, new String[]{"page", "p"}),
 
-    private static final HashMap<String, HistoryCommandType> BY_ALIAS = new HashMap<>();
+    PREVIEW(CmdPreview.class, new String[]{"preview", "view", "pre", "v"}),
 
-    private static final String BASE_PERMISSION = "cannondebug.history.";
+    REGION(CmdRegion.class, new String[]{"region", "r"}),
+
+    SELECT(CmdSelect.class, new String[]{"select", "s"});
+
+    private static final Map<String, CommandType> BY_ALIAS = new HashMap<>();
+
+    private static final String BASE_PERMISSION = "cannondebug.";
 
     private final Class<? extends CommandExecutor> commandExecutor;
 
@@ -50,7 +58,7 @@ public enum HistoryCommandType {
 
     private final String permission;
 
-    HistoryCommandType(Class<? extends CommandExecutor> commandExecutor, String[] aliases) {
+    CommandType(Class<? extends CommandExecutor> commandExecutor, String[] aliases) {
         this.commandExecutor = commandExecutor;
         this.aliases = aliases;
         this.permission = BASE_PERMISSION + name().toLowerCase();
@@ -65,14 +73,14 @@ public enum HistoryCommandType {
      * @param args   arguments included with the command.
      * @return a new CommandExecutor instance that corresponds to the command arguments.
      */
-    public static CommandExecutor fromCommand(CannonDebug plugin, CommandSender sender, String[] args) {
+    public static CommandExecutor fromCommand(CannonDebugPlugin plugin, CommandSender sender, String[] args) {
         // Return default (HELP) command type if invalid arguments.
-        if (args.length == 1 || !BY_ALIAS.containsKey(args[1])) {
+        if (args.length == 0 || !BY_ALIAS.containsKey(args[0])) {
             return newInstance(HELP, plugin, sender, args);
         }
 
         // Return corresponding command type to inputted arguments.
-        return newInstance(BY_ALIAS.get(args[1]), plugin, sender, args);
+        return newInstance(BY_ALIAS.get(args[0]), plugin, sender, args);
     }
 
     /**
@@ -85,10 +93,10 @@ public enum HistoryCommandType {
      * @param args        arguments included with the command.
      * @return a new CommandExecutor instance that corresponds to the command type.
      */
-    public static CommandExecutor newInstance(HistoryCommandType commandType, CannonDebug plugin, CommandSender sender, String[] args) {
+    public static CommandExecutor newInstance(CommandType commandType, CannonDebugPlugin plugin, CommandSender sender, String[] args) {
         try {
             return commandType.commandExecutor
-                    .getConstructor(CannonDebug.class, CommandSender.class, String[].class, String.class)
+                    .getConstructor(CannonDebugPlugin.class, CommandSender.class, String[].class, String.class)
                     .newInstance(plugin, sender, args, commandType.permission);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
@@ -96,7 +104,7 @@ public enum HistoryCommandType {
     }
 
     static {
-        for (HistoryCommandType commandType : values()) {
+        for (CommandType commandType : values()) {
             for (String alias : commandType.aliases) {
                 BY_ALIAS.put(alias, commandType);
             }

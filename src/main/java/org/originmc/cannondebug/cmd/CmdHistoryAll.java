@@ -22,31 +22,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug.cmd;
+
+package org.originmc.cannondebug.cmd;
 
 import mkremins.fanciful.FancyMessage;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
-import org.originmc.cdebug.BlockSelection;
-import org.originmc.cdebug.CannonDebug;
-import org.originmc.cdebug.EntityTracker;
-import org.originmc.cdebug.FancyPager;
-import org.originmc.cdebug.utils.EntityUtils;
+import org.originmc.cannondebug.BlockSelection;
+import org.originmc.cannondebug.CannonDebugPlugin;
+import org.originmc.cannondebug.EntityTracker;
+import org.originmc.cannondebug.FancyPager;
+import org.originmc.cannondebug.utils.EnumUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.bukkit.ChatColor.*;
 
 public final class CmdHistoryAll extends CommandExecutor {
 
-    public CmdHistoryAll(CannonDebug plugin, CommandSender sender, String[] args, String permission) {
+    public CmdHistoryAll(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
     @Override
     public boolean perform() {
         // Generate fancy message lines for all new message data.
-        ArrayList<FancyMessage> lines = new ArrayList<>();
+        List<FancyMessage> lines = new ArrayList<>();
         for (BlockSelection selection : user.getSelections()) {
             // Do nothing if tracker has not been spawned for this selection yet.
             EntityTracker tracker = selection.getTracker();
@@ -85,7 +87,7 @@ public final class CmdHistoryAll extends CommandExecutor {
 
                             .command("/cannondebug h i " + selection.getId())
 
-                            .then(EntityUtils.getFriendlyName(tracker.getEntityType()))
+                            .then(EnumUtils.getFriendlyName(tracker.getEntityType()))
                             .color(YELLOW)
 
                             .then(" | ")

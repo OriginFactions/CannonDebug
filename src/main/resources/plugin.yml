@@ -1,12 +1,12 @@
-name: ${project.artifactId}
-main: org.originmc.cdebug.CannonDebug
+name: ${project.name}
+main: ${project.groupId}.${project.artifactId}.${project.name}Plugin
 version: ${project.version}
 author: Sudzzy
-softdepend: [WorldEdit]
+depend: [WorldEdit]
 
 commands:
   cannondebug:
-    aliases: ["c", "cd", "cdebug"]
+    aliases: ["cd", "cannon", "c"]
     description: Provides the ability to debug cannons.
     usage: "§cIncorrect syntax. For help use /cannondebug"
     permission: cannondebug.user

@@ -22,7 +22,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug.cmd;
+
+package org.originmc.cannondebug.cmd;
 
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
@@ -32,8 +33,8 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.originmc.cdebug.CannonDebug;
-import org.originmc.cdebug.utils.NumberUtils;
+import org.originmc.cannondebug.CannonDebugPlugin;
+import org.originmc.cannondebug.utils.NumberUtils;
 
 import static org.bukkit.ChatColor.GRAY;
 import static org.bukkit.ChatColor.RED;
@@ -41,12 +42,7 @@ import static org.bukkit.ChatColor.YELLOW;
 
 public final class CmdRegion extends CommandExecutor {
 
-    private static final String COMPLETED_MESSAGE = YELLOW + "All possible selections have been toggled.";
-    private static final String CUBOID_MESSAGE = RED + "Region selected must be a cuboid!";
-    private static final String TOO_LARGE_MESSAGE = RED + "Region selected is too large! " + GRAY + "(Max area = %m blocks)";
-    private static final String WORLDEDIT_MESSAGE = RED + "WorldEdit was not found on this server!";
-
-    public CmdRegion(CannonDebug plugin, CommandSender sender, String[] args, String permission) {
+    public CmdRegion(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
@@ -55,7 +51,7 @@ public final class CmdRegion extends CommandExecutor {
         // Do nothing if WorldEdit is not installed.
         Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
         if (plugin == null) {
-            sender.sendMessage(WORLDEDIT_MESSAGE);
+            sender.sendMessage(RED + "WorldEdit was not found on this server!");
             return true;
         }
 
@@ -63,14 +59,14 @@ public final class CmdRegion extends CommandExecutor {
         WorldEditPlugin worldEdit = (WorldEditPlugin) plugin;
         Selection selection = worldEdit.getSelection((Player) sender);
         if (!(selection instanceof CuboidSelection)) {
-            sender.sendMessage(CUBOID_MESSAGE);
+            sender.sendMessage(RED + "Region selected must be a cuboid!");
             return true;
         }
 
         // Do nothing if selection is too large.
         int maxArea = NumberUtils.getNumericalPerm(sender, "cannondebug.maxarea.");
         if (selection.getArea() > maxArea) {
-            sender.sendMessage(TOO_LARGE_MESSAGE.replace("%m", "" + maxArea));
+            sender.sendMessage(String.format(RED + "Region selected is too large! " + GRAY + "(Max area = %s blocks)", maxArea));
             return true;
         }
 
@@ -80,13 +76,13 @@ public final class CmdRegion extends CommandExecutor {
         for (int x = min.getBlockX(); x <= max.getBlockX(); x++) {
             for (int y = min.getBlockY(); y <= max.getBlockY(); y++) {
                 for (int z = min.getBlockZ(); z <= max.getBlockZ(); z++) {
-                    this.plugin.handleSelection((Player) sender, user, max.getWorld().getBlockAt(x, y, z));
+                    this.plugin.handleSelection(user, max.getWorld().getBlockAt(x, y, z));
                 }
             }
         }
 
         // Send complete message.
-        sender.sendMessage(COMPLETED_MESSAGE);
+        sender.sendMessage(YELLOW + "All possible selections have been toggled.");
         return true;
     }
 

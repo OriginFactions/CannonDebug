@@ -22,22 +22,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.originmc.cdebug.cmd;
+
+package org.originmc.cannondebug.cmd;
 
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.originmc.cdebug.BlockSelection;
-import org.originmc.cdebug.CannonDebug;
+import org.originmc.cannondebug.BlockSelection;
+import org.originmc.cannondebug.CannonDebugPlugin;
 
 public final class CmdClear extends CommandExecutor {
 
-    public static final String CLEARED_HISTORY_MESSAGE = ChatColor.YELLOW + "History has been cleared.";
-
-    public static final String CLEARED_SELECTIONS_MESSAGE = ChatColor.YELLOW + "Selections have been cleared.";
-
-    public CmdClear(CannonDebug plugin, CommandSender sender, String[] args, String permission) {
+    public CmdClear(CannonDebugPlugin plugin, CommandSender sender, String[] args, String permission) {
         super(plugin, sender, args, permission);
     }
 
@@ -54,7 +51,7 @@ public final class CmdClear extends CommandExecutor {
             }
 
             // Send confirmation message.
-            sender.sendMessage(CLEARED_HISTORY_MESSAGE);
+            sender.sendMessage(ChatColor.YELLOW + "History has been cleared.");
             return true;
         }
 
@@ -72,7 +69,7 @@ public final class CmdClear extends CommandExecutor {
             user.getSelections().clear();
 
             // Send confirmation message.
-            sender.sendMessage(CLEARED_SELECTIONS_MESSAGE);
+            sender.sendMessage(ChatColor.YELLOW + "Selections have been cleared.");
             return true;
         }
         return false;

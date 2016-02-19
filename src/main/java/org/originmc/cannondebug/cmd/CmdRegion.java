@@ -28,7 +28,6 @@ package org.originmc.cannondebug.cmd;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -49,7 +48,7 @@ public final class CmdRegion extends CommandExecutor {
     @Override
     public boolean perform() {
         // Do nothing if WorldEdit is not installed.
-        Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
+        Plugin plugin = this.plugin.getServer().getPluginManager().getPlugin("WorldEdit");
         if (plugin == null) {
             sender.sendMessage(RED + "WorldEdit was not found on this server!");
             return true;

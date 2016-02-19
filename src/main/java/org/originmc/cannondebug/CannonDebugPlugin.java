@@ -25,7 +25,8 @@
 
 package org.originmc.cannondebug;
 
-import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -33,6 +34,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.originmc.cannondebug.cmd.CommandType;
 import org.originmc.cannondebug.listener.PlayerListener;
 import org.originmc.cannondebug.listener.WorldListener;
+import org.originmc.cannondebug.utils.EnumUtils;
+import org.originmc.cannondebug.utils.MaterialUtils;
+import org.originmc.cannondebug.utils.NumberUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,6 +44,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import static org.bukkit.ChatColor.BOLD;
+import static org.bukkit.ChatColor.GRAY;
+import static org.bukkit.ChatColor.GREEN;
+import static org.bukkit.ChatColor.RED;
+import static org.bukkit.ChatColor.WHITE;
 
 public final class CannonDebugPlugin extends JavaPlugin implements Runnable {
 
@@ -80,7 +90,7 @@ public final class CannonDebugPlugin extends JavaPlugin implements Runnable {
         getServer().getScheduler().runTaskTimer(this, this, 1, 1);
 
         // Load user profiles.
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : getServer().getOnlinePlayers()) {
             users.put(player.getUniqueId(), new User(player));
         }
     }
@@ -110,6 +120,57 @@ public final class CannonDebugPlugin extends JavaPlugin implements Runnable {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
         return CommandType.fromCommand(this, sender, args).execute();
+    }
+
+    /**
+     * Attempts to either add or remove a selection depending on whether or not
+     * the user already had this position set.
+     *
+     * @param user  the user that is adding to their selection.
+     * @param block the block to select.
+     */
+    public void handleSelection(User user, Block block) {
+        // Do nothing if not a selectable block.
+        if (!MaterialUtils.isSelectable(block.getType())) return;
+
+        // Attempt to deselect block if it is already selected.
+        BlockSelection selection = user.getSelection(block.getLocation());
+        Player player = user.getBase();
+        if (selection != null) {
+            // Inform the player.
+            player.sendMessage(String.format(RED + "" + BOLD + "REM " + WHITE + "%m @ %x %y %z " + GRAY + "ID: %i",
+                    EnumUtils.getFriendlyName(block.getType()), block.getX(), block.getY(), block.getZ(), selection.getId()));
+
+            // Remove the clicked location.
+            user.getSelections().remove(selection);
+
+            // Update users preview.
+            if (user.isPreviewing()) {
+                getServer().getScheduler().runTask(this, () ->
+                        player.sendBlockChange(block.getLocation(), block.getType(), block.getData()));
+            }
+            return;
+        }
+
+        // Do nothing if the user has too many selections.
+        int max = NumberUtils.getNumericalPerm(player, "cannondebug.maxselections.");
+        if (user.getSelections().size() >= max) {
+            player.sendMessage(String.format(RED + "You have too many selections! " + GRAY + "(Max = %s)", max));
+            return;
+        }
+
+        // Update users preview.
+        if (user.isPreviewing()) {
+            getServer().getScheduler().runTask(this, () ->
+                    player.sendBlockChange(block.getLocation(), Material.EMERALD_BLOCK, (byte) 0));
+        }
+
+        // Add the selected location.
+        selection = user.addSelection(block.getLocation());
+
+        // Inform the player.
+        player.sendMessage(String.format(GREEN + "" + BOLD + "ADD " + WHITE + "%s @ %s %s %s " + GRAY + "ID: %s",
+                EnumUtils.getFriendlyName(block.getType()), block.getX(), block.getY(), block.getZ(), selection.getId()));
     }
 
 }
